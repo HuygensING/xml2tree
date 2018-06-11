@@ -18,8 +18,7 @@ $ npm test
 ```
 
 ## Example
-See the `__test__` dir for examples, but because I'm kind, here is one:
-```
+```javascript
 import xml2tree from 'xml2tree'
 
 await function main() {
@@ -55,3 +54,4 @@ await function main() {
 
 main()
 ```
+See the `__test__` dir for more (elaborate) examples
