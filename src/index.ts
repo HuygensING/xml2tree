@@ -1,10 +1,10 @@
 import * as sax from "sax"
 import OpenNodes from './open-nodes'
 
-export const prepareXml = (xml: string): string => xml
-	.trim()
-	.replace(/\r?\n+\s*/usg, ' ')
-	.replace(/> </usg, '><')
+export const prepareXml = (xml: string): string =>
+	xml
+		.trim()
+		.replace(/\r?\n+\s*/usg, ' ')
 
 export type SaxNode = SaxTag | string
 export interface SaxTag extends sax.Tag {
@@ -19,8 +19,10 @@ class Sax2Tree {
 	openNodes: OpenNodes
 	tree: SaxTag
 
-	constructor(xml: string, resolve: (tree: SaxTag) => void, reject: (err: Error) => void) {
+	constructor(xml: string, collapse: boolean, resolve: (tree: SaxTag) => void, reject: (err: Error) => void) {
 		xml = prepareXml(xml)
+		if (collapse) xml = xml.replace(/> </usg, '><')
+
 		this.openNodes = new OpenNodes()
 
 		const parser = sax.parser(true, {})
@@ -59,4 +61,4 @@ class Sax2Tree {
 	}
 }
 
-export default (xml: string) => new Promise<SaxTag>((resolve, reject) => new Sax2Tree(xml, resolve, reject));
+export default (xml: string, collapse: boolean = true) => new Promise<SaxTag>((resolve, reject) => new Sax2Tree(xml, collapse, resolve, reject));

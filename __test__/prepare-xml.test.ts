@@ -43,6 +43,6 @@ describe('Sax2Tree prepareXml', () => {
 		expect(prepareXml(`<div>
 			<span>1</span>
 			<span>2</span>
-		</div>`)).toBe('<div><span>1</span><span>2</span></div>')
+		</div>`)).toBe('<div> <span>1</span> <span>2</span> </div>')
 	})
 })

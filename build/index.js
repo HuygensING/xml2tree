@@ -4,10 +4,9 @@ const sax = require("sax");
 const open_nodes_1 = require("./open-nodes");
 exports.prepareXml = (xml) => xml
     .trim()
-    .replace(/\r?\n+\s*/usg, ' ')
-    .replace(/> </usg, '><');
+    .replace(/\r?\n+\s*/usg, ' ');
 class Sax2Tree {
-    constructor(xml, resolve, reject) {
+    constructor(xml, collapse, resolve, reject) {
         this.openTag = (node) => {
             const parentNode = this.openNodes.last();
             const parent = parentNode != null ? { name: parentNode.name, attributes: parentNode.attributes } : null;
@@ -33,6 +32,8 @@ class Sax2Tree {
             this.openNodes.remove();
         };
         xml = exports.prepareXml(xml);
+        if (collapse)
+            xml = xml.replace(/> </usg, '><');
         this.openNodes = new open_nodes_1.default();
         const parser = sax.parser(true, {});
         parser.onopentag = this.openTag;
@@ -43,4 +44,4 @@ class Sax2Tree {
         parser.write(xml).close();
     }
 }
-exports.default = (xml) => new Promise((resolve, reject) => new Sax2Tree(xml, resolve, reject));
+exports.default = (xml, collapse = true) => new Promise((resolve, reject) => new Sax2Tree(xml, collapse, resolve, reject));
