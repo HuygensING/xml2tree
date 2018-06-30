@@ -5,6 +5,13 @@ import { SaxTag } from "./index"
 class OpenNodes {
 	private nodes: SaxTag[] = []
 
+	public toSimple() {
+		return this.nodes.map(node => ({
+			name: node.name,
+			attributes: node.attributes
+		}))
+	}
+
 	public add(tag: SaxTag) {
 		this.nodes.push(tag)
 	}

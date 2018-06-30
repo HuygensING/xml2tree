@@ -4,6 +4,12 @@ class OpenNodes {
     constructor() {
         this.nodes = [];
     }
+    toSimple() {
+        return this.nodes.map(node => ({
+            name: node.name,
+            attributes: node.attributes
+        }));
+    }
     add(tag) {
         this.nodes.push(tag);
     }

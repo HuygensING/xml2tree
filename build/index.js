@@ -8,17 +8,17 @@ exports.prepareXml = (xml) => xml
 class Sax2Tree {
     constructor(xml, collapse, resolve, reject) {
         this.openTag = (node) => {
-            const parentNode = this.openNodes.last();
-            const parent = parentNode != null ? { name: parentNode.name, attributes: parentNode.attributes } : null;
-            const tagNode = Object.assign({}, node, { parent });
-            this.openNodes.add(tagNode);
-            if (parent == null) {
-                this.tree = tagNode;
+            const parents = this.openNodes.toSimple();
+            const saxTag = Object.assign({}, node, { parents });
+            this.openNodes.add(saxTag);
+            if (!parents.length) {
+                this.tree = saxTag;
                 return;
             }
-            if (!parentNode.hasOwnProperty('children'))
-                parentNode.children = [];
-            parentNode.children.push(tagNode);
+            const parent = this.openNodes.last();
+            if (!parent.hasOwnProperty('children'))
+                parent.children = [];
+            parent.children.push(saxTag);
         };
         this.handleText = (text) => {
             const parent = this.openNodes.last();

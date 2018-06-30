@@ -9,10 +9,10 @@ export const prepareXml = (xml: string): string =>
 export type SaxNode = SaxTag | string
 export interface SaxTag extends sax.Tag {
 	children?: SaxNode[]
-	parent: {
+	parents: {
 		name: string,
 		attributes: any
-	}
+	}[]
 }
 
 class Sax2Tree {
@@ -35,18 +35,20 @@ class Sax2Tree {
 	}
 
 	private openTag = (node: sax.Tag) => {
-		const parentNode = this.openNodes.last()
-		const parent = parentNode != null ? { name: parentNode.name, attributes: parentNode.attributes } : null
-		const tagNode: SaxTag = { ...node, parent }
-		this.openNodes.add(tagNode)
+		// const parentNode = this.openNodes.last()
+		// const parent = parentNode != null ? { name: parentNode.name, attributes: parentNode.attributes } : null
+		const parents = this.openNodes.toSimple()
+		const saxTag: SaxTag = { ...node, parents }
+		this.openNodes.add(saxTag)
 
-		if (parent == null) {
-			this.tree = tagNode
+		if (!parents.length) {
+			this.tree = saxTag
 			return
 		}
 
-		if (!parentNode.hasOwnProperty('children')) parentNode.children = []
-		parentNode.children.push(tagNode)
+		const parent = this.openNodes.last()
+		if (!parent.hasOwnProperty('children')) parent.children = []
+		parent.children.push(saxTag)
 	}
 
 	private handleText = (text: string) => {
