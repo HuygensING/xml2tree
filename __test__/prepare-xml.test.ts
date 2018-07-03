@@ -1,26 +1,26 @@
 import { prepareXml } from '../src/index'
 
 describe('Sax2Tree prepareXml', () => {
-	test('empty string', async () => {
+	test('empty string', () => {
 		expect(prepareXml('')).toBe('')
 	})
 
-	test('flat xml', async () => {
+	test('flat xml', () => {
 		expect(prepareXml('<div>hi</div>')).toBe('<div>hi</div>')
 	})
 
-	test('xml with line break', async () => {
+	test('xml with line break', () => {
 		expect(prepareXml(`<div>hi
 		</div>`)).toBe('<div>hi </div>')
 	})
 
-	test('xml with line breaks', async () => {
+	test('xml with line breaks', () => {
 		expect(prepareXml(`<div>
 		hi
 		</div>`)).toBe('<div> hi </div>')
 	})
 
-	test('xml with line breaks before and after xml', async () => {
+	test('xml with line breaks before and after xml', () => {
 		expect(prepareXml(`
 		<div>
 		hi
@@ -28,14 +28,14 @@ describe('Sax2Tree prepareXml', () => {
 		`)).toBe('<div> hi </div>')
 	})
 
-	test('xml with line breaks between text content', async () => {
+	test('xml with line breaks between text content', () => {
 		expect(prepareXml(`
 		<div>hi
 		ho</div>
 		`)).toBe('<div>hi ho</div>')
 	})
 
-	test('xml with line breaks with \r\n and \t', async () => {
+	test('xml with line breaks with \r\n and \t', () => {
 		expect(prepareXml('<div>\r\n\t\thi\r\n</div>')).toBe('<div> hi </div>')
 	})
 

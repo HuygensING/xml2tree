@@ -5,17 +5,44 @@ const open_nodes_1 = require("./open-nodes");
 exports.prepareXml = (xml) => xml
     .trim()
     .replace(/\r?\n+\s*/usg, ' ');
+function addSiblings(tree) {
+    function addSiblings(node) {
+        if (typeof node === 'string' || node == null)
+            return;
+        if (node.hasOwnProperty('children')) {
+            for (const child of node.children) {
+                if (typeof child === 'string')
+                    continue;
+                child.siblings = node.children
+                    .filter(n => typeof n !== 'string')
+                    .map((n) => {
+                    if (n.id === child.id)
+                        return 'SELF';
+                    return ({ name: n.name, attributes: n.attributes });
+                });
+                if (child.siblings.length === 1)
+                    child.siblings = [];
+                addSiblings(child);
+            }
+        }
+    }
+    addSiblings(tree);
+    return tree;
+}
 class Sax2Tree {
-    constructor(xml, collapse, resolve, reject) {
+    constructor(xml, options, resolve, reject) {
         this.openTag = (node) => {
+            const parent = this.openNodes.last();
             const parents = this.openNodes.toSimple();
-            const saxTag = Object.assign({}, node, { parents });
+            const saxTag = Object.assign({}, node, { parents, id: 'a' + Math.floor(Math.random() * 10000000), custom: {} });
+            if (this.options.hasOwnProperty('setCustomValues')) {
+                saxTag.custom = this.options.setCustomValues(saxTag);
+            }
             this.openNodes.add(saxTag);
             if (!parents.length) {
                 this.tree = saxTag;
                 return;
             }
-            const parent = this.openNodes.last();
             if (!parent.hasOwnProperty('children'))
                 parent.children = [];
             parent.children.push(saxTag);
@@ -31,8 +58,9 @@ class Sax2Tree {
         this.closeTag = (tagName) => {
             this.openNodes.remove();
         };
+        this.options = Object.assign({}, defaultOptions, options);
         xml = exports.prepareXml(xml);
-        if (collapse)
+        if (this.options.collapse)
             xml = xml.replace(/> </usg, '><');
         this.openNodes = new open_nodes_1.default();
         const parser = sax.parser(true, {});
@@ -40,8 +68,26 @@ class Sax2Tree {
         parser.ontext = this.handleText;
         parser.onclosetag = this.closeTag;
         parser.onerror = reject;
-        parser.onend = () => resolve(this.tree);
+        parser.onend = () => resolve(addSiblings(this.tree));
         parser.write(xml).close();
     }
 }
-exports.default = (xml, collapse = true) => new Promise((resolve, reject) => new Sax2Tree(xml, collapse, resolve, reject));
+const defaultOptions = {
+    collapse: true,
+};
+exports.default = (xml, options) => new Promise((resolve, reject) => new Sax2Tree(xml, options, resolve, reject));
+function treeToList(tree) {
+    if (typeof tree === 'string' || tree == null)
+        return [];
+    let list = [];
+    list.push(tree);
+    if (Array.isArray(tree.children)) {
+        const children = tree.children
+            .filter(child => typeof child !== 'string')
+            .map(treeToList)
+            .reduce((prev, curr) => prev.concat(curr), []);
+        list = list.concat(children);
+    }
+    return list;
+}
+exports.treeToList = treeToList;
