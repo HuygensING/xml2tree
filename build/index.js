@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const sax = require("sax");
 const open_nodes_1 = require("./open-nodes");
+const sax_tag_1 = require("./sax-tag");
+exports.SaxTag = sax_tag_1.default;
 exports.prepareXml = (xml) => xml
     .trim()
     .replace(/\r?\n+\s*/usg, ' ');
@@ -34,7 +36,7 @@ class Sax2Tree {
         this.openTag = (node) => {
             const parent = this.openNodes.last();
             const parents = this.openNodes.toSimple();
-            const saxTag = Object.assign({}, node, { parents, id: 'a' + Math.floor(Math.random() * 10000000), custom: {} });
+            const saxTag = new sax_tag_1.default(Object.assign({}, node, { parents }));
             if (this.options.hasOwnProperty('setCustomValues')) {
                 saxTag.custom = this.options.setCustomValues(saxTag);
             }

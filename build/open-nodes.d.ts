@@ -1,4 +1,4 @@
-import { SaxTag } from "./index";
+import SaxTag from "./sax-tag";
 declare class OpenNodes {
     private nodes;
     toSimple(): {

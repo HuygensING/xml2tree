@@ -1,21 +1,6 @@
-import * as sax from "sax";
+import SaxTag, { SaxNode } from './sax-tag';
+export { SaxTag, SaxNode };
 export declare const prepareXml: (xml: string) => string;
-interface SaxTagSimple {
-    attributes: {
-        [key: string]: string;
-    };
-    name: string;
-}
-export declare type SaxNode = SaxTag | string;
-export interface SaxTag extends sax.Tag {
-    children?: SaxNode[];
-    id: string;
-    parents: SaxTagSimple[];
-    siblings?: (SaxTagSimple | 'SELF')[];
-    custom?: {
-        [k: string]: any;
-    };
-}
 export interface XMLToTreeOptions {
     collapse?: boolean;
     setCustomValues?: (node: SaxTag) => {
