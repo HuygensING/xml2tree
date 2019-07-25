@@ -4,6 +4,7 @@ const sax = require("sax");
 const open_nodes_1 = require("./open-nodes");
 const sax_tag_1 = require("./sax-tag");
 exports.SaxTag = sax_tag_1.default;
+exports.MinimalNode = sax_tag_1.MinimalNode;
 exports.prepareXml = (xml) => xml
     .trim()
     .replace(/\r?\n+\s*/usg, ' ');
@@ -61,9 +62,10 @@ class Sax2Tree {
             this.openNodes.remove();
         };
         this.options = Object.assign({}, defaultOptions, options);
-        xml = exports.prepareXml(xml);
-        if (this.options.collapse)
+        if (this.options.collapse) {
+            xml = exports.prepareXml(xml);
             xml = xml.replace(/> </usg, '><');
+        }
         this.openNodes = new open_nodes_1.default();
         const parser = sax.parser(true, {});
         parser.onopentag = this.openTag;

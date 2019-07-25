@@ -1,7 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class SaxTag {
+class MinimalNode {
+}
+exports.MinimalNode = MinimalNode;
+class SaxTag extends MinimalNode {
     constructor(node) {
+        super();
         this.attributes = {};
         this.children = [];
         this.isSelfClosing = false;
@@ -17,7 +21,7 @@ class SaxTag {
                 return child;
             return new SaxTag(child);
         });
-        this.id = 'a' + Math.floor(Math.random() * 10000000);
+        this.id = 'TAG_' + Math.floor(Math.random() * 10000000);
     }
 }
 exports.default = SaxTag;

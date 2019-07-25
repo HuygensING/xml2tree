@@ -1,5 +1,5 @@
-import SaxTag, { SaxNode } from './sax-tag';
-export { SaxTag, SaxNode };
+import SaxTag, { SaxNode, SaxTagSimple, MinimalNode } from './sax-tag';
+export { MinimalNode, SaxTag, SaxTagSimple, SaxNode };
 export declare const prepareXml: (xml: string) => string;
 export interface XMLToTreeOptions {
     collapse?: boolean;

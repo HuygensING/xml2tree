@@ -1,8 +1,8 @@
 import * as sax from "sax"
 import OpenNodes from './open-nodes'
-import SaxTag, { SaxNode } from './sax-tag'
+import SaxTag, { SaxNode, SaxTagSimple, MinimalNode } from './sax-tag'
 
-export { SaxTag, SaxNode }
+export { MinimalNode, SaxTag, SaxTagSimple, SaxNode }
 
 export const prepareXml = (xml: string): string =>
 	xml
@@ -40,8 +40,10 @@ class Sax2Tree {
 
 	constructor(xml: string, options: XMLToTreeOptions, resolve: (tree: SaxTag) => void, reject: (err: Error) => void) {
 		this.options = { ...defaultOptions, ...options }
-		xml = prepareXml(xml)
-		if (this.options.collapse) xml = xml.replace(/> </usg, '><')
+		if (this.options.collapse) {
+			xml = prepareXml(xml)
+			xml = xml.replace(/> </usg, '><')
+		}
 
 		this.openNodes = new OpenNodes()
 		const parser = sax.parser(true, {})
@@ -56,7 +58,7 @@ class Sax2Tree {
 	private openTag = (node: sax.Tag) => {
 		const parent = this.openNodes.last()
 		const parents = this.openNodes.toSimple()
-		// TODO use crypto to create ID
+		
 		const saxTag = new SaxTag({...node, parents})
 		if (this.options.hasOwnProperty('setCustomValues')) {
 			saxTag.custom = this.options.setCustomValues(saxTag)

@@ -1,12 +1,16 @@
 import * as sax from "sax";
-interface SaxTagSimple {
+export declare class MinimalNode {
+    id: string;
+    children?: (MinimalNode | string)[];
+}
+export interface SaxTagSimple {
     attributes: {
         [key: string]: string;
     };
     name: string;
 }
 export declare type SaxNode = SaxTag | string;
-export default class SaxTag implements sax.Tag {
+export default class SaxTag extends MinimalNode implements sax.Tag {
     attributes: {
         [key: string]: string;
     };
@@ -21,4 +25,3 @@ export default class SaxTag implements sax.Tag {
     };
     constructor(node?: Partial<SaxTag>);
 }
-export {};

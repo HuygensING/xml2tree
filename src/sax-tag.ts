@@ -1,11 +1,16 @@
 import * as sax from "sax"
 
-interface SaxTagSimple {
+export class MinimalNode {
+	id: string
+	children?: (MinimalNode | string)[]
+}
+
+export interface SaxTagSimple {
     attributes: { [key: string]: string };
 	name: string
 }
 export type SaxNode = SaxTag | string
-export default class SaxTag implements sax.Tag {
+export default class SaxTag extends MinimalNode implements sax.Tag {
     attributes: { [key: string]: string } = {}
 	children: SaxNode[] = []
 	id: string
@@ -18,6 +23,8 @@ export default class SaxTag implements sax.Tag {
 	} = {}
 
 	constructor(node?: Partial<SaxTag>) {
+		super()
+
 		for (const prop in node) {
 			(this as any)[prop] = (node as any)[prop]
 		}	
@@ -27,7 +34,7 @@ export default class SaxTag implements sax.Tag {
 			return new SaxTag(child)
 		})
 
-		this.id = 'a'+Math.floor(Math.random() * 10000000)
+		this.id = 'TAG_'+Math.floor(Math.random() * 10000000)
 	}
 }
 
